@@ -1136,7 +1136,6 @@ async def txt_handler(bot: Client, m: Message):
     # We need to convert that first '&' to '?'
     
     # Check if '?' is already in the original URL
-    if '?' not in url:
         # If no '?' exists, assume the first '&' should be a '?'
         # This is a bit risky if the original URL is not consistently formed.
         # A more robust solution would be to explicitly find the start of query parameters.
