@@ -1120,11 +1120,94 @@ async def txt_handler(bot: Client, m: Message):
                 bcov = f'bcov_auth={cwtoken}'
                 url = url.split("bcov_auth")[0]+bcov
                 
-            elif "childId" in url and "parentId" in url:
-                url = f"https://anonymousrajputplayer-9ab2f2730a02.herokuapp.com/pw?url={url}&token={pwtoken}"
-                           
-            elif "d1d34p8vz63oiq" in url or "sec1.pw.live" in url:
-                url = f"https://anonymouspwplayer-b99f57957198.herokuapp.com/pw?url={url}?token={pwtoken}"
+            if "childId" in url and "parentId" in url:
+    # Assuming 'url' already contains parentId and childId using '&'
+    # We need to replace the first '&' after master.mpd with '?'
+    # This is a bit of a hack and assumes a specific URL structure.
+    # A more robust solution would be to parse the URL and rebuild it.
+
+    # Find the position of "master.mpd&" (or similar delimiter)
+    # and replace '&' with '?' there if it's the first query parameter for the inner URL.
+    
+    # A safer approach is to assume the original URL is properly formed
+    # with `&` for parameters and ensure the first one is `?` if no `?` exists.
+    
+    # Let's assume 'url' looks like: https://d1d34p8vz63oiq.cloudfront.net/.../master.mpd&parentId=...&childId=...
+    # We need to convert that first '&' to '?'
+    
+    # Check if '?' is already in the original URL
+    if '?' not in url:
+        # If no '?' exists, assume the first '&' should be a '?'
+        # This is a bit risky if the original URL is not consistently formed.
+        # A more robust solution would be to explicitly find the start of query parameters.
+        
+        # This is a simplified example, you might need more complex parsing
+        # depending on all possible input URL formats.
+        
+        # Find the first occurrence of '&' after "master.mpd"
+        # Example: https://d1d34p8vz63oiq.cloudfront.net/9ab84d64-ff14-4d72-96b4-9c510b232a9a/master.mpd&parentId=...
+        # We need to change the '&' after master.mpd to '?'
+
+        # Let's try to find the start of the query string and ensure it starts with '?'
+        
+        # A more direct approach:
+        # We know the original URL should be like:
+        # https://d1d34p8vz63oiq.cloudfront.net/9ab84d64-ff14-4d72-96b4-9c510b232a9a/master.mpd&parentId=...&childId=...
+        
+        # We need to convert the first '&' into '?' *if* it's starting the query part.
+        # The most reliable way is to parse the URL.
+        
+        from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+        
+        parsed_original_url = urlparse(url)
+        
+        # Extract the path and the existing query parameters
+        path_without_query = parsed_original_url.path
+        existing_query_params = parse_qs(parsed_original_url.query)
+        
+        # Construct the new query string, ensuring it starts with '?'
+        # and then append parentId and childId
+        
+        # If parentId and childId are already in the original URL's query,
+        # we don't need to do anything special here as parse_qs handles them.
+        
+        # Reconstruct the inner URL, ensuring the query starts with '?' if parameters exist
+        if existing_query_params:
+            # Reconstruct the query string using urlencode, which uses '&' between parameters
+            reconstructed_query = urlencode(existing_query_params, doseq=True)
+            inner_url = urlunparse(parsed_original_url._replace(query=reconstructed_query))
+            # The problem is that urlencode will use '&' as well.
+            # We need to specifically ensure the first parameter is preceded by '?'
+            
+            # The simple fix for your specific case (where the input has '&' instead of '?'):
+            # Find the position where the query string *should* start.
+            # Assuming the original 'url' is like:
+            # https://d1d34p8vz63oiq.cloudfront.net/9ab84d64-ff14-4d72-96b4-9c510b232a9a/master.mpd&parentId=...
+            
+            # Find the first '&' that likely separates the path from the query.
+            # This is a heuristic and might not work for all URL structures.
+            
+            if '&parentId=' in url and '?' not in url:
+                # This is the specific scenario you described: '?' is missing, '&' is there
+                # We need to replace the first '&' with '?'
+                url_parts = url.split('&', 1) # Split only on the first '&'
+                if len(url_parts) > 1:
+                    correct_inner_url = url_parts[0] + '?' + url_parts[1]
+                else:
+                    correct_inner_url = url # No '&' to fix, perhaps it's already correct or malformed
+            else:
+                correct_inner_url = url # '?' is already present or no parentId/childId as query
+            
+            url = f"https://anonymousrajputplayer-9ab2f2730a02.herokuapp.com/pw?url={correct_inner_url}&token={pwtoken}"
+        
+        else: # If no existing query parameters, just use the original URL as is, no '?' to fix
+            url = f"https://anonymousrajputplayer-9ab2f2730a02.herokuapp.com/pw?url={url}&token={pwtoken}"
+
+elif "d1d34p8vz63oiq" in url or "sec1.pw.live" in url:
+    # This block already correctly adds '?' before 'token' for the inner URL
+    url = f"https://anonymouspwplayer-b99f57957198.herokuapp.com/pw?url={url}?token={pwtoken}"
+
+
 
             if ".pdf*" in url:
                 url = f"https://dragoapi.vercel.app/pdf/{url}"
