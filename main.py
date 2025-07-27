@@ -1156,14 +1156,6 @@ async def txt_handler(bot: Client, m: Message):
         # We need to convert the first '&' into '?' *if* it's starting the query part.
         # The most reliable way is to parse the URL.
         
-        from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
-        
-        parsed_original_url = urlparse(url)
-        
-        # Extract the path and the existing query parameters
-        path_without_query = parsed_original_url.path
-        existing_query_params = parse_qs(parsed_original_url.query)
-        
         # Construct the new query string, ensuring it starts with '?'
         # and then append parentId and childId
         
