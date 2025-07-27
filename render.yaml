@@ -4,7 +4,7 @@ services:
     plan: free
     env: docker
     dockerfilePath: Dockerfile
-    repo: https://github.com/iryme786/AUGUST-1ST-WITH-TOKEN
+    repo: https://github.com/iryme786/TEST-1-AUGUST-
     branch: main
     autoDeploy: false
     envVars:
